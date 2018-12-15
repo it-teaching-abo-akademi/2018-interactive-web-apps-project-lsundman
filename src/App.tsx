@@ -1,27 +1,29 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Props } from "react";
+import "./App.css";
+import { Portfolio, PortfolioProps } from "./component/Portfolio";
+import AlphaVantage from "alphavantage-ts";
+
+const API_CONN = new AlphaVantage("9LUUJN34EO841037");
 
 class App extends Component {
+  portfolioRef: React.RefObject<Portfolio>;
+
+  constructor(props: any) {
+    super(props);
+    this.portfolioRef = React.createRef<Portfolio>();
+  }
+
+  componentDidMount = () => {
+    let portfolio = this.portfolioRef.current;
+    if (portfolio != null) {
+      portfolio.addTicker("AAPL", 10);
+      portfolio.addTicker("MSFT", 20);
+      portfolio.addTicker("NOK", 30);
+    }
+  };
+
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+    return <Portfolio ref={this.portfolioRef} apiConnection={API_CONN} />;
   }
 }
 
