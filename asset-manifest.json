@@ -1,14 +1,13 @@
 {
-  "main.css": "/2018-interactive-web-apps-project-lsundman/static/css/main.b37b8e50.chunk.css",
-  "main.js": "/2018-interactive-web-apps-project-lsundman/static/js/main.98f60bf4.chunk.js",
-  "main.js.map": "/2018-interactive-web-apps-project-lsundman/static/js/main.98f60bf4.chunk.js.map",
-  "static/js/1.82dafdb5.chunk.js": "/2018-interactive-web-apps-project-lsundman/static/js/1.82dafdb5.chunk.js",
-  "static/js/1.82dafdb5.chunk.js.map": "/2018-interactive-web-apps-project-lsundman/static/js/1.82dafdb5.chunk.js.map",
+  "main.css": "/2018-interactive-web-apps-project-lsundman/static/css/main.984bac1c.chunk.css",
+  "main.js": "/2018-interactive-web-apps-project-lsundman/static/js/main.07ef1e07.chunk.js",
+  "main.js.map": "/2018-interactive-web-apps-project-lsundman/static/js/main.07ef1e07.chunk.js.map",
+  "static/js/1.30ad8cbf.chunk.js": "/2018-interactive-web-apps-project-lsundman/static/js/1.30ad8cbf.chunk.js",
+  "static/js/1.30ad8cbf.chunk.js.map": "/2018-interactive-web-apps-project-lsundman/static/js/1.30ad8cbf.chunk.js.map",
   "runtime~main.js": "/2018-interactive-web-apps-project-lsundman/static/js/runtime~main.e0c2f665.js",
   "runtime~main.js.map": "/2018-interactive-web-apps-project-lsundman/static/js/runtime~main.e0c2f665.js.map",
-  "static/media/logo.svg": "/2018-interactive-web-apps-project-lsundman/static/media/logo.5d5d9eef.svg",
-  "static/css/main.b37b8e50.chunk.css.map": "/2018-interactive-web-apps-project-lsundman/static/css/main.b37b8e50.chunk.css.map",
+  "static/css/main.984bac1c.chunk.css.map": "/2018-interactive-web-apps-project-lsundman/static/css/main.984bac1c.chunk.css.map",
   "index.html": "/2018-interactive-web-apps-project-lsundman/index.html",
-  "precache-manifest.d005a59aaad18c8efc2e47d2acb56fea.js": "/2018-interactive-web-apps-project-lsundman/precache-manifest.d005a59aaad18c8efc2e47d2acb56fea.js",
+  "precache-manifest.d127ad4f332bb02fee78118779153169.js": "/2018-interactive-web-apps-project-lsundman/precache-manifest.d127ad4f332bb02fee78118779153169.js",
   "service-worker.js": "/2018-interactive-web-apps-project-lsundman/service-worker.js"
 }
