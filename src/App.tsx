@@ -1,9 +1,12 @@
-import React, { Component, Props } from "react";
+import React, { Component } from "react";
 import "./App.css";
-import { Portfolio, PortfolioProps } from "./component/Portfolio";
+import { Portfolio } from "./component/Portfolio";
 import AlphaVantage from "alphavantage-ts";
 
-const API_CONN = new AlphaVantage("9LUUJN34EO841037");
+let API_CONN: AlphaVantage;
+
+if (process.env.REACT_APP_API_KEY !== undefined)
+  API_CONN = new AlphaVantage(process.env.REACT_APP_API_KEY);
 
 class App extends Component {
   portfolioRef: React.RefObject<Portfolio>;
@@ -23,7 +26,13 @@ class App extends Component {
   };
 
   render() {
-    return <Portfolio ref={this.portfolioRef} apiConnection={API_CONN} />;
+    return (
+      <Portfolio
+        ref={this.portfolioRef}
+        name="Portfolio 1"
+        apiConnection={API_CONN}
+      />
+    );
   }
 }
 

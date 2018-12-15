@@ -1,5 +1,27 @@
-table,
+.spms-portfolio table,
 th,
 td {
   border: 1px solid black;
+  margin: 1em;
+}
+
+.spms-portfolio {
+  border: 2px solid grey;
+  width: fit-content;
+  height: fit-content;
+  padding: 1em;
+}
+
+.spms-portfolio form {
+  display: flex;
+  flex-direction: column;
+}
+
+.spms-portfolio form * {
+  margin: 0.5em;
+}
+
+.spms-portfolio form button,
+.spms-portfolio form input {
+  height: 2.5em;
 }

@@ -20,13 +20,15 @@ export class Ticker extends Component<TickerProps> {
 
   componentDidMount = () => {
     this.setState({ sharePrice: 23.2 });
-    // this.props.apiConnection.stocks
-    //   .quote(this.props.tickerSymbol, { datatype: "json" })
-    //   .then(data => {
-    //     this.setState({
-    //       sharePrice: data["Global Quote"]["05. price"]
+    // if (this.props.apiConnection !== undefined) {
+    //   this.props.apiConnection.stocks
+    //     .quote(this.props.tickerSymbol, { datatype: "json" })
+    //     .then(data => {
+    //       this.setState({
+    //         sharePrice: data["Global Quote"]["05. price"]
+    //       });
     //     });
-    //   });
+    // }
   };
 
   render() {
