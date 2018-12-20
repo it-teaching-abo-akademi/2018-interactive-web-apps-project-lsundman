@@ -5,7 +5,12 @@ import StorageBackedComponent from "./StorageBackedComponent";
 
 export class Ticker extends StorageBackedComponent<
   { price: number | undefined; invalidSymbol: boolean },
-  { symbol: string; amount: number; onRemove: () => void }
+  {
+    symbol: string;
+    amount: number;
+    onRemove: () => void;
+    onSelect: (selected: boolean) => void;
+  }
 > {
   api: AlphaVantage;
   constructor(props: any) {
@@ -51,6 +56,12 @@ export class Ticker extends StorageBackedComponent<
 
     return (
       <tr className={this.state.invalidSymbol ? "invalid-symbol" : ""}>
+        <td>
+          <input
+            type="checkbox"
+            onChange={evt => this.props.onSelect(evt.target.checked)}
+          />
+        </td>
         <td> {this.props.symbol} </td>
         <td>$ {quoteLabel}</td>
         <td>$ {quoteLabelTotal}</td>

@@ -3,9 +3,14 @@ import { Ticker } from "./Ticker";
 import StorageBackedComponent from "./StorageBackedComponent";
 import AddForm from "./AddForm";
 
+class shareEntry {}
 export class Portfolio extends StorageBackedComponent<
   {
-    shareList: { shareSymbol: string; shareAmount: number }[];
+    shareList: {
+      shareSymbol: string;
+      shareAmount: number;
+      selected: boolean;
+    }[];
     viewMain: boolean;
   },
   { name: string; onRemove: () => void }
@@ -23,7 +28,7 @@ export class Portfolio extends StorageBackedComponent<
       this.setState({
         shareList: [
           ...this.state.shareList,
-          { shareSymbol: symbol, shareAmount: amount }
+          { shareSymbol: symbol, shareAmount: amount, selected: false }
         ],
         viewMain: true
       });
@@ -41,6 +46,21 @@ export class Portfolio extends StorageBackedComponent<
     });
   };
 
+  setSelected = (itemName: string, selected: boolean) => {
+    this.setState({
+      shareList: this.state.shareList.map(share =>
+        share.shareSymbol === itemName
+          ? {
+              shareSymbol: share.shareSymbol,
+              shareAmount: share.shareAmount,
+              selected: selected
+            }
+          : share
+      ),
+      viewMain: this.state.viewMain
+    });
+  };
+
   getId = (): string => {
     return `SPMS-portfolio-${this.props.name}`;
   };
@@ -52,6 +72,7 @@ export class Portfolio extends StorageBackedComponent<
         symbol={item.shareSymbol}
         amount={item.shareAmount}
         onRemove={() => this.removeStock(item.shareSymbol)}
+        onSelect={selected => this.setSelected(item.shareSymbol, selected)}
       />
     ));
 
@@ -71,9 +92,11 @@ export class Portfolio extends StorageBackedComponent<
           <table>
             <thead>
               <tr>
+                <th />
                 <th>Stock</th>
                 <th>Price</th>
                 <th>Total value</th>
+                <th />
               </tr>
             </thead>
             <tbody>{tickers}</tbody>
@@ -89,6 +112,7 @@ export class Portfolio extends StorageBackedComponent<
             >
               Add stock
             </button>
+            <button />
           </div>
         </div>
       );
