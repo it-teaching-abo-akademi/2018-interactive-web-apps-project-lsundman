@@ -25,3 +25,12 @@ td {
 .spms-portfolio form input {
   height: 2.5em;
 }
+
+.header {
+  display: block;
+  background: grey;
+}
+
+.invalid-symbol {
+  background: red;
+}

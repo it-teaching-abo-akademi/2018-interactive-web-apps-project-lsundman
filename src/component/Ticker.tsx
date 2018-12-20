@@ -1,31 +1,69 @@
 import React, { Component } from "react";
 import AlphaVantage from "alphavantage-ts";
+import { getApiConnection } from "../App";
+import StorageBackedComponent from "./StorageBackedComponent";
 
-export interface TickerProps {
-  tickerSymbol: string;
-  shareAmount: number;
-  sharePrice: number;
-}
+export class Ticker extends StorageBackedComponent<
+  { price: number | undefined; invalidSymbol: boolean },
+  { symbol: string; amount: number; onRemove: () => void }
+> {
+  api: AlphaVantage;
+  constructor(props: any) {
+    super(props, () => {
+      return { price: undefined, invalidSymbol: false };
+    });
+    this.api = getApiConnection();
+  }
 
-export class Ticker extends Component<TickerProps> {
+  getId = () => {
+    return `SPMS-ticker: ${btoa(this.props.symbol + this.props.amount)}`;
+  };
+
   componentDidMount = () => {
-    // if (this.props.apiConnection !== undefined) {
-    //   this.props.apiConnection.stocks
-    //     .quote(this.props.tickerSymbol, { datatype: "json" })
-    //     .then(data => {
-    //       this.setState({
-    //         sharePrice: data["Global Quote"]["05. price"]
-    //       });
-    //     });
-    // }
+    if (this.state.price === undefined) this.getQuote();
+  };
+
+  getQuote = () => {
+    if (this.api !== undefined) {
+      this.api.stocks
+        .quote(this.props.symbol, { datatype: "json" })
+        .then(data => {
+          let price = data["Global Quote"]["05. price"];
+          this.setState({
+            price: price,
+            invalidSymbol: price === undefined
+          });
+        });
+    }
   };
 
   render() {
+    let quoteLabel;
+    let quoteLabelTotal;
+
+    if (this.state.price === undefined) {
+      quoteLabel = "...";
+      quoteLabelTotal = "...";
+    } else {
+      quoteLabel = this.state.price;
+      quoteLabelTotal = this.state.price * this.props.amount;
+    }
+
     return (
-      <tr>
-        <td> {this.props.tickerSymbol} </td>
-        <td>$ {this.props.sharePrice}</td>
-        <td>$ {this.props.shareAmount * this.props.sharePrice}</td>
+      <tr className={this.state.invalidSymbol ? "invalid-symbol" : ""}>
+        <td> {this.props.symbol} </td>
+        <td>$ {quoteLabel}</td>
+        <td>$ {quoteLabelTotal}</td>
+        <td>
+          <button
+            onClick={() => {
+              this.removeStoredState();
+              this.props.onRemove();
+            }}
+          >
+            <i className="fas fa-trash" />
+          </button>
+        </td>
       </tr>
     );
   }

@@ -11,7 +11,7 @@ class AddForm extends Component<{
 
   constructor(props: any) {
     super(props);
-    this.state = { tickerSymbol: "", shareAmount: 0 };
+    this.state = { tickerSymbol: "", shareAmount: 1 };
   }
 
   render() {
