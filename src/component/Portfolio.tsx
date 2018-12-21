@@ -37,10 +37,10 @@ export class Portfolio extends StorageBackedComponent<
     }
   };
 
-  removeStock = (symbol: string) => {
+  removeStocks = (symbolList: string[]) => {
     this.setState({
       shareList: this.state.shareList.filter(
-        elem => elem.shareSymbol != symbol
+        elem => !symbolList.includes(elem.shareSymbol)
       ),
       viewMain: true
     });
@@ -71,7 +71,6 @@ export class Portfolio extends StorageBackedComponent<
         key={`${item.shareSymbol}-${item.shareAmount}`}
         symbol={item.shareSymbol}
         amount={item.shareAmount}
-        onRemove={() => this.removeStock(item.shareSymbol)}
         onSelect={selected => this.setSelected(item.shareSymbol, selected)}
       />
     ));
@@ -112,7 +111,17 @@ export class Portfolio extends StorageBackedComponent<
             >
               Add stock
             </button>
-            <button />
+            <button
+              onClick={() => {
+                this.removeStocks(
+                  this.state.shareList
+                    .filter(elem => elem.selected)
+                    .map(elem => elem.shareSymbol)
+                );
+              }}
+            >
+              Remove selected
+            </button>
           </div>
         </div>
       );

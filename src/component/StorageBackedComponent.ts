@@ -13,7 +13,7 @@ abstract class StorageBackedComponent<TS, Props> extends Component<Props> {
 
   abstract getId(): string;
 
-  componentDidMount = () => {
+  componentWillMount = () => {
     this.setState(this.loadState());
   };
 

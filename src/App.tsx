@@ -27,22 +27,28 @@ class App extends StorageBackedComponent<
   }
 
   addPortfolio = () => {
-    if (this.state.addFieldValue != "") {
-      if (
-        !this.state.portfolioList.some(
-          elem => elem === this.state.addFieldValue
-        )
-      ) {
-        this.setState({
-          portfolioList: [
-            ...this.state.portfolioList,
-            this.state.addFieldValue
-          ],
-          addFieldValue: ""
-        });
-      } else {
-        window.alert("Portfolio names should be unique");
+    if (this.state.portfolioList.length < 10) {
+      if (this.state.addFieldValue != "") {
+        if (
+          !this.state.portfolioList.some(
+            elem => elem === this.state.addFieldValue
+          )
+        ) {
+          this.setState({
+            portfolioList: [
+              ...this.state.portfolioList,
+              this.state.addFieldValue
+            ],
+            addFieldValue: ""
+          });
+        } else {
+          window.alert("Portfolio names should be unique");
+        }
       }
+    } else {
+      window.alert(
+        "You can only have 10 portfolios configured at the same time"
+      );
     }
   };
 

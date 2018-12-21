@@ -8,7 +8,6 @@ export class Ticker extends StorageBackedComponent<
   {
     symbol: string;
     amount: number;
-    onRemove: () => void;
     onSelect: (selected: boolean) => void;
   }
 > {
@@ -65,16 +64,6 @@ export class Ticker extends StorageBackedComponent<
         <td> {this.props.symbol} </td>
         <td>$ {quoteLabel}</td>
         <td>$ {quoteLabelTotal}</td>
-        <td>
-          <button
-            onClick={() => {
-              this.removeStoredState();
-              this.props.onRemove();
-            }}
-          >
-            <i className="fas fa-trash" />
-          </button>
-        </td>
       </tr>
     );
   }

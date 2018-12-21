@@ -34,7 +34,9 @@
     "extends": "react-app"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.7.42",
     "@types/node": "^10.12.12",
+    "@types/react-chartjs-2": "^2.5.7",
     "gh-pages": "^2.0.1",
     "tslint": "^5.11.0",
     "tslint-react": "^3.6.0",
