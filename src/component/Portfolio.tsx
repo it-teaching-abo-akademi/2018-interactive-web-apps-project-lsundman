@@ -13,7 +13,7 @@ export class Portfolio extends StorageBackedComponent<
     }[];
     viewMain: boolean;
   },
-  { name: string; onRemove: () => void }
+  { name: string; onRemove: () => void; onGraphShow: (data: any) => void }
 > {
   storage = window.localStorage;
 
@@ -122,6 +122,7 @@ export class Portfolio extends StorageBackedComponent<
             >
               Remove selected
             </button>
+            <button>Show graph</button>
           </div>
         </div>
       );
