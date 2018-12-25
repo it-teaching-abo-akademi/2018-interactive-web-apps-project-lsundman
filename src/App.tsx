@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import "./App.css";
 import { Portfolio } from "./component/Portfolio";
 import AlphaVantage from "alphavantage-ts";
@@ -14,16 +14,19 @@ export function getApiConnection(): AlphaVantage {
   return API_CONN;
 }
 
-class App extends StorageBackedComponent<
-  { portfolioList: string[]; addFieldValue: string; showingGraph: boolean },
-  {}
-> {
+type SpmsState = {
+  portfolioList: string[];
+  addFieldValue: string;
+  graphList: string[];
+};
+
+class App extends StorageBackedComponent<SpmsState, {}> {
   constructor(props: any) {
     super(props, () => {
       return {
         portfolioList: [],
         addFieldValue: "",
-        showingGraph: this.state.showingGraph
+        graphList: []
       };
     });
   }
@@ -42,7 +45,7 @@ class App extends StorageBackedComponent<
               this.state.addFieldValue
             ],
             addFieldValue: "",
-            showingGraph: this.state.showingGraph
+            graphList: this.state.graphList
           });
         } else {
           window.alert("Portfolio names should be unique");
@@ -60,17 +63,9 @@ class App extends StorageBackedComponent<
       this.setState({
         portfolioList: this.state.portfolioList.filter(elem => elem != name),
         addFieldValue: "",
-        showingGraph: this.state.showingGraph
+        graphList: this.state.graphList
       });
     }
-  };
-
-  showGraph = (data: any) => {
-    this.setState({
-      showingGraph: true,
-      portfolioList: this.state.portfolioList,
-      addFieldValue: this.state.addFieldValue
-    });
   };
 
   getId = (): string => {
@@ -83,14 +78,34 @@ class App extends StorageBackedComponent<
         key={item}
         name={item}
         onRemove={() => this.removePortfolio(item)}
-        onGraphShow={this.showGraph}
+        onGraphShow={data => {
+          this.setState({
+            portfolioList: this.state.portfolioList,
+            addFieldValue: this.state.addFieldValue,
+            graphList: data
+          });
+        }}
       />
     ));
 
-    let graphPopup;
+    let popup;
 
-    if (this.state.showingGraph) {
-      graphPopup = <Popup />;
+    if (this.state.graphList.length > 0) {
+      popup = (
+        <div className="graph">
+          <Popup
+            shareList={this.state.graphList}
+            apiConnection={getApiConnection()}
+            onCloseButtonClick={() => {
+              this.setState({
+                portfolioList: this.state.portfolioList,
+                addFieldValue: this.state.addFieldValue,
+                graphList: []
+              });
+            }}
+          />
+        </div>
+      );
     }
 
     return (
@@ -102,7 +117,7 @@ class App extends StorageBackedComponent<
               this.setState({
                 portfolioList: this.state.portfolioList,
                 addFieldValue: evt.target.value,
-                showingGraph: this.state.showingGraph
+                graphList: this.state.graphList
               });
             }}
             type="text"
@@ -110,6 +125,7 @@ class App extends StorageBackedComponent<
           />
         </div>
         <ul>{portfolios}</ul>
+        {popup}
       </div>
     );
   }

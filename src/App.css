@@ -34,3 +34,19 @@ td {
 .invalid-symbol {
   background: red;
 }
+
+.graph {
+  z-index: 2;
+  width: 60em;
+  height: 30em;
+  background: white;
+  border: 2px solid grey;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  margin: auto;
+}
