@@ -3,21 +3,26 @@ import { Ticker } from "./Ticker";
 import StorageBackedComponent from "./StorageBackedComponent";
 import AddForm from "./AddForm";
 
-class shareEntry {}
-export class Portfolio extends StorageBackedComponent<
-  {
-    shareList: {
-      shareSymbol: string;
-      shareAmount: number;
-      selected: boolean;
-    }[];
-    viewMain: boolean;
-  },
-  { name: string; onRemove: () => void; onGraphShow: (data: any) => void }
-> {
-  storage = window.localStorage;
+type PortfolioState = {
+  shareList: {
+    shareSymbol: string;
+    shareAmount: number;
+    selected: boolean;
+  }[];
+  viewMain: boolean;
+};
 
-  constructor(props: { name: string; onRemove: () => void }) {
+type PortfolioProps = {
+  name: string;
+  onRemove: () => void;
+  onGraphShow: (data: string[]) => void;
+};
+
+export class Portfolio extends StorageBackedComponent<
+  PortfolioState,
+  PortfolioProps
+> {
+  constructor(props: PortfolioProps) {
     super(props, () => {
       return { shareList: [], viewMain: true };
     });
@@ -122,7 +127,17 @@ export class Portfolio extends StorageBackedComponent<
             >
               Remove selected
             </button>
-            <button>Show graph</button>
+            <button
+              onClick={() =>
+                this.props.onGraphShow(
+                  this.state.shareList
+                    .filter(item => item.selected)
+                    .map(item => item.shareSymbol)
+                )
+              }
+            >
+              Show graph
+            </button>
           </div>
         </div>
       );

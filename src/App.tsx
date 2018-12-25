@@ -3,7 +3,7 @@ import "./App.css";
 import { Portfolio } from "./component/Portfolio";
 import AlphaVantage from "alphavantage-ts";
 import StorageBackedComponent from "./component/StorageBackedComponent";
-import Popup from "./component/Popup";
+import { Line } from "react-chartjs-2";
 
 let API_CONN: AlphaVantage;
 
@@ -14,16 +14,21 @@ export function getApiConnection(): AlphaVantage {
   return API_CONN;
 }
 
-class App extends StorageBackedComponent<
-  { portfolioList: string[]; addFieldValue: string; showingGraph: boolean },
-  {}
-> {
+type SpmsState = {
+  portfolioList: string[];
+  addFieldValue: string;
+  graphData: any | undefined;
+  graphRes: string;
+};
+
+class App extends StorageBackedComponent<SpmsState, {}> {
   constructor(props: any) {
     super(props, () => {
       return {
         portfolioList: [],
         addFieldValue: "",
-        showingGraph: this.state.showingGraph
+        graphData: undefined,
+        graphRes: "weekly"
       };
     });
   }
@@ -42,7 +47,8 @@ class App extends StorageBackedComponent<
               this.state.addFieldValue
             ],
             addFieldValue: "",
-            showingGraph: this.state.showingGraph
+            graphData: this.state.graphData,
+            graphRes: this.state.graphRes
           });
         } else {
           window.alert("Portfolio names should be unique");
@@ -60,16 +66,24 @@ class App extends StorageBackedComponent<
       this.setState({
         portfolioList: this.state.portfolioList.filter(elem => elem != name),
         addFieldValue: "",
-        showingGraph: this.state.showingGraph
+        graphData: this.state.graphData,
+        graphRes: this.state.graphRes
       });
     }
   };
 
-  showGraph = (data: any) => {
-    this.setState({
-      showingGraph: true,
-      portfolioList: this.state.portfolioList,
-      addFieldValue: this.state.addFieldValue
+  showGraph = (data: string[]) => {
+    let api = getApiConnection();
+    data.forEach(sym => {
+      if (this.state.graphRes === "weekly") {
+        api.stocks.weekly(sym, { datatype: "json" }).then(data => {
+          console.log(data);
+        });
+      } else {
+        api.stocks.monthly(sym, { datatype: "json" }).then(data => {
+          console.log(data);
+        });
+      }
     });
   };
 
@@ -88,10 +102,40 @@ class App extends StorageBackedComponent<
     ));
 
     let graphPopup;
-
-    if (this.state.showingGraph) {
-      graphPopup = <Popup />;
-    }
+    if (this.state.graphData != undefined)
+      graphPopup = (
+        <div className="graph">
+          <button
+            onClick={() => {
+              this.setState({
+                portfolioList: this.state.portfolioList,
+                addFieldValue: this.state.addFieldValue,
+                graphData: undefined,
+                graphRes: this.state.graphRes
+              });
+            }}
+          >
+            X
+          </button>
+          <Line data={this.state.graphData} />
+          <select
+            value={this.state.graphRes}
+            onChange={evt => {
+              this.setState({
+                portfolioList: this.state.portfolioList,
+                addFieldValue: this.state.addFieldValue,
+                graphData: this.state.graphData,
+                graphRes: evt.target.value
+              });
+            }}
+          >
+            <option selected value="weekly">
+              Weekly
+            </option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+      );
 
     return (
       <div>
@@ -102,7 +146,8 @@ class App extends StorageBackedComponent<
               this.setState({
                 portfolioList: this.state.portfolioList,
                 addFieldValue: evt.target.value,
-                showingGraph: this.state.showingGraph
+                graphData: this.state.graphData,
+                graphRes: this.state.graphRes
               });
             }}
             type="text"
@@ -110,6 +155,7 @@ class App extends StorageBackedComponent<
           />
         </div>
         <ul>{portfolios}</ul>
+        {graphPopup}
       </div>
     );
   }
