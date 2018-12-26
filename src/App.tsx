@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import "./App.css";
 import { Portfolio } from "./component/Portfolio";
 import AlphaVantage from "alphavantage-ts";
@@ -17,8 +17,7 @@ export function getApiConnection(): AlphaVantage {
 type SpmsState = {
   portfolioList: string[];
   addFieldValue: string;
-  graphData: any | undefined;
-  graphRes: string;
+  graphList: string[];
 };
 
 class App extends StorageBackedComponent<SpmsState, {}> {
@@ -27,8 +26,7 @@ class App extends StorageBackedComponent<SpmsState, {}> {
       return {
         portfolioList: [],
         addFieldValue: "",
-        graphData: undefined,
-        graphRes: "weekly"
+        graphList: []
       };
     });
   }
@@ -47,8 +45,7 @@ class App extends StorageBackedComponent<SpmsState, {}> {
               this.state.addFieldValue
             ],
             addFieldValue: "",
-            graphData: this.state.graphData,
-            graphRes: this.state.graphRes
+            graphList: this.state.graphList
           });
         } else {
           window.alert("Portfolio names should be unique");
@@ -66,25 +63,9 @@ class App extends StorageBackedComponent<SpmsState, {}> {
       this.setState({
         portfolioList: this.state.portfolioList.filter(elem => elem != name),
         addFieldValue: "",
-        graphData: this.state.graphData,
-        graphRes: this.state.graphRes
+        graphList: this.state.graphList
       });
     }
-  };
-
-  showGraph = (data: string[]) => {
-    let api = getApiConnection();
-    data.forEach(sym => {
-      if (this.state.graphRes === "weekly") {
-        api.stocks.weekly(sym, { datatype: "json" }).then(data => {
-          console.log(data);
-        });
-      } else {
-        api.stocks.monthly(sym, { datatype: "json" }).then(data => {
-          console.log(data);
-        });
-      }
-    });
   };
 
   getId = (): string => {
@@ -97,45 +78,35 @@ class App extends StorageBackedComponent<SpmsState, {}> {
         key={item}
         name={item}
         onRemove={() => this.removePortfolio(item)}
-        onGraphShow={this.showGraph}
+        onGraphShow={data => {
+          this.setState({
+            portfolioList: this.state.portfolioList,
+            addFieldValue: this.state.addFieldValue,
+            graphList: data
+          });
+        }}
       />
     ));
 
-    let graphPopup;
-    if (this.state.graphData != undefined)
-      graphPopup = (
+    let popup;
+
+    if (this.state.graphList.length > 0) {
+      popup = (
         <div className="graph">
-          <button
-            onClick={() => {
+          <Popup
+            shareList={this.state.graphList}
+            apiConnection={getApiConnection()}
+            onCloseButtonClick={() => {
               this.setState({
                 portfolioList: this.state.portfolioList,
                 addFieldValue: this.state.addFieldValue,
-                graphData: undefined,
-                graphRes: this.state.graphRes
+                graphList: []
               });
             }}
-          >
-            X
-          </button>
-          <Line data={this.state.graphData} />
-          <select
-            value={this.state.graphRes}
-            onChange={evt => {
-              this.setState({
-                portfolioList: this.state.portfolioList,
-                addFieldValue: this.state.addFieldValue,
-                graphData: this.state.graphData,
-                graphRes: evt.target.value
-              });
-            }}
-          >
-            <option selected value="weekly">
-              Weekly
-            </option>
-            <option value="monthly">Monthly</option>
-          </select>
+          />
         </div>
       );
+    }
 
     return (
       <div>
@@ -146,8 +117,7 @@ class App extends StorageBackedComponent<SpmsState, {}> {
               this.setState({
                 portfolioList: this.state.portfolioList,
                 addFieldValue: evt.target.value,
-                graphData: this.state.graphData,
-                graphRes: this.state.graphRes
+                graphList: this.state.graphList
               });
             }}
             type="text"
@@ -155,7 +125,7 @@ class App extends StorageBackedComponent<SpmsState, {}> {
           />
         </div>
         <ul>{portfolios}</ul>
-        {graphPopup}
+        {popup}
       </div>
     );
   }
