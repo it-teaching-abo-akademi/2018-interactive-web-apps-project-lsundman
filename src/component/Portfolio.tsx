@@ -77,34 +77,42 @@ export class Portfolio extends StorageBackedComponent<
         symbol={item.shareSymbol}
         amount={item.shareAmount}
         onSelect={selected => this.setSelected(item.shareSymbol, selected)}
+        selected={item.selected}
       />
     ));
+
+    let table;
+
+    if (tickers.length > 0) {
+      table = (
+        <table>
+          <thead>
+            <tr>
+              <th />
+              <th>Stock</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Total value</th>
+            </tr>
+          </thead>
+          <tbody>{tickers}</tbody>
+        </table>
+      );
+    }
 
     let body;
 
     if (this.state.viewMain) {
       body = (
         <div>
+          {table}
           <button
             onClick={() => {
-              this.removeStoredState();
               this.props.onRemove();
             }}
           >
             Remove portfolio
           </button>
-          <table>
-            <thead>
-              <tr>
-                <th />
-                <th>Stock</th>
-                <th>Price</th>
-                <th>Total value</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>{tickers}</tbody>
-          </table>
           <div className="button-row">
             <button
               onClick={() => {
@@ -117,6 +125,7 @@ export class Portfolio extends StorageBackedComponent<
               Add stock
             </button>
             <button
+              disabled={!this.state.shareList.some(e => e.selected)}
               onClick={() => {
                 this.removeStocks(
                   this.state.shareList
@@ -128,6 +137,7 @@ export class Portfolio extends StorageBackedComponent<
               Remove selected
             </button>
             <button
+              disabled={!this.state.shareList.some(e => e.selected)}
               onClick={() =>
                 this.props.onGraphShow(
                   this.state.shareList
@@ -152,12 +162,12 @@ export class Portfolio extends StorageBackedComponent<
       );
     }
     return (
-      <div className="spms-portfolio">
+      <li className="spms-portfolio">
         <div>
           <h2>{this.props.name}</h2>
           {body}
         </div>
-      </div>
+      </li>
     );
   }
 }

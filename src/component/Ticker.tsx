@@ -1,22 +1,22 @@
-import React, { Component } from "react";
-import AlphaVantage from "alphavantage-ts";
-import { getApiConnection } from "../App";
+import React from "react";
 import StorageBackedComponent from "./StorageBackedComponent";
+import { getQuote } from "../helpers";
 
-export class Ticker extends StorageBackedComponent<
-  { price: number | undefined; invalidSymbol: boolean },
+export class Ticker extends React.Component<
   {
     symbol: string;
     amount: number;
     onSelect: (selected: boolean) => void;
-  }
+    selected: boolean;
+  },
+  { price: number | undefined; invalidSymbol: boolean }
 > {
-  api: AlphaVantage;
   constructor(props: any) {
-    super(props, () => {
-      return { price: undefined, invalidSymbol: false };
-    });
-    this.api = getApiConnection();
+    super(props);
+    this.state = {
+      price: undefined,
+      invalidSymbol: false
+    };
   }
 
   getId = () => {
@@ -24,21 +24,12 @@ export class Ticker extends StorageBackedComponent<
   };
 
   componentDidMount = () => {
-    if (this.state.price === undefined) this.getQuote();
-  };
-
-  getQuote = () => {
-    if (this.api !== undefined) {
-      this.api.stocks
-        .quote(this.props.symbol, { datatype: "json" })
-        .then(data => {
-          let price = data["Global Quote"]["05. price"];
-          this.setState({
-            price: price,
-            invalidSymbol: price === undefined
-          });
-        });
-    }
+    getQuote(this.props.symbol).then(data => {
+      this.setState({
+        price: data,
+        invalidSymbol: data === undefined
+      });
+    });
   };
 
   render() {
@@ -50,7 +41,8 @@ export class Ticker extends StorageBackedComponent<
       quoteLabelTotal = "...";
     } else {
       quoteLabel = this.state.price;
-      quoteLabelTotal = this.state.price * this.props.amount;
+      quoteLabelTotal =
+        Math.round(this.state.price * this.props.amount * 100) / 100;
     }
 
     return (
@@ -59,10 +51,12 @@ export class Ticker extends StorageBackedComponent<
           <input
             type="checkbox"
             onChange={evt => this.props.onSelect(evt.target.checked)}
+            checked={this.props.selected}
           />
         </td>
         <td> {this.props.symbol} </td>
         <td>$ {quoteLabel}</td>
+        <td> {this.props.amount} </td>
         <td>$ {quoteLabelTotal}</td>
       </tr>
     );

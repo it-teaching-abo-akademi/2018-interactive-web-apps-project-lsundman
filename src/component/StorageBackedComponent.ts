@@ -34,10 +34,6 @@ abstract class StorageBackedComponent<TS, Props> extends Component<Props> {
   saveState = (state: TS) => {
     this.storage.setItem(this.getId(), JSON.stringify(state));
   };
-
-  removeStoredState = () => {
-    this.storage.removeItem(this.getId());
-  };
 }
 
 export default StorageBackedComponent;

@@ -1,15 +1,33 @@
+html {
+  background: url(
+    data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAYAAABmBXS+AAAALUlEQVQYlWOQ0pBpIIQZyFIkZ838H68iOWvm/zBMUBFR1hFlEl5FRDmconACAGxSU+kOc4E1AAAAAElFTkSuQmCC
+  );
+}
+button {
+  margin: 0.5em;
+}
 .spms-portfolio table,
 th,
 td {
-  border: 1px solid black;
-  margin: 1em;
+  font-family: serif;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+  border-collapse: collapse;
+}
+
+.spms-portfolio h2 {
+  font-family: serif;
+  font-style: italic;
 }
 
 .spms-portfolio {
-  border: 2px solid grey;
+  background-color: whitesmoke;
+  border: 1.5px solid gainsboro;
   width: fit-content;
   height: fit-content;
   padding: 1em;
+  border-radius: 0.25em;
+  box-shadow: -4px 4px 0px 0px rgba(0, 0, 0, 0.2);
 }
 
 .spms-portfolio form {
@@ -26,27 +44,35 @@ td {
   height: 2.5em;
 }
 
-.header {
+.add-portfolio-field {
+  width: 50vw;
+  margin: auto;
   display: block;
-  background: grey;
+  margin-top: 2em;
 }
 
 .invalid-symbol {
   background: red;
 }
 
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+li {
+  list-style: none;
+  margin: 1em;
+}
+
 .graph {
-  z-index: 2;
-  width: 60em;
-  height: 30em;
-  background: white;
-  border: 2px solid grey;
-
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
+  width: 75vw;
+  background: whitesmoke;
+  border: 1.5px solid gainsboro;
   margin: auto;
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  box-shadow: -4px 4px 0px 0px rgba(0, 0, 0, 0.2);
 }

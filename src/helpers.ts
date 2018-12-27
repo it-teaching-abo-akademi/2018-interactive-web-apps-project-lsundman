@@ -1,51 +1,62 @@
-import AlphaVantage from "alphavantage-ts";
-import { parseTwoDigitYear } from "moment";
+import { getApiConnection } from "./App";
 
 // 24h is this many milliseconds
 const MILLI_DAY_FACTOR = 86400000;
 
-function days(a: Date, b: Date): Date[] {
-  let result: Date[] = [];
-
-  a.setHours(0, 0, 0, 0);
-  b.setHours(0, 0, 0, 0);
-
-  let tmp = b.getTime();
-
-  while (tmp != a.getTime()) {
-    result.push(new Date(tmp));
-    tmp = tmp - MILLI_DAY_FACTOR;
-  }
-
-  return result;
+export async function getQuote(symbol: string): Promise<number> {
+  return getApiConnection()
+    .stocks.quote(symbol, { datatype: "json" })
+    .then(data => {
+      if (data["Global Quote"] === {}) {
+        return undefined;
+      } else {
+        return data["Global Quote"]["05. price"];
+      }
+    });
 }
 
-function getDataPoints(
-  tickerSymbol: string,
-  dateStart: Date,
-  dateEnd: Date,
-  api: AlphaVantage
-): Promise<{ x: Date; y: number }[]> {
-  let dayList = days(dateStart, dateEnd).map(
-    date => `${date.getFullYear}-${date.getMonth}-${date.getDay}`
-  );
-  let size: "full" | "compact" = dayList.length > 20 ? "full" : "compact";
-  return api.stocks
-    .daily(tickerSymbol, { outputsize: size, datatype: "json" })
+async function getDataPoints(
+  symbol: string,
+  labels: string[]
+): Promise<number[]> {
+  return getApiConnection()
+    .stocks.daily(symbol, {
+      outputsize: "full",
+      datatype: "json"
+    })
     .then(data => {
-      let timeSeries = data["Time Series (Daily)"];
-      return Object.keys(timeSeries)
-        .filter(key => dayList.includes(key))
-        .map(key => {
-          return {
-            x: new Date(key),
-            y: parseInt(timeSeries[key]["4. close"], 10)
-          };
-        })
-        .sort((a: { x: Date; y: number }, b: { x: Date; y: number }) => {
-          return b.x.getTime() - a.x.getTime();
-        });
+      let series = data["Time Series (Daily)"];
+      return labels.map(day => {
+        if (day in series) {
+          return series[day]["4. close"];
+        } else {
+          return undefined;
+        }
+      });
     });
+}
+
+function days(a: string, b: string): string[] {
+  let result: Date[] = [];
+  let aTime = new Date(a).getTime();
+  let bTime = new Date(b).getTime();
+
+  while (bTime >= aTime) {
+    // Pushing date to the top of the array in order to keep it sorted
+    result.unshift(new Date(bTime));
+    bTime = bTime - MILLI_DAY_FACTOR;
+  }
+
+  return result.map(
+    date =>
+      `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${(
+        "0" + date.getDate()
+      ).slice(-2)}`
+  );
+}
+
+function dayDiff(a: Date, b: Date): number {
+  return Math.abs(b.getTime() - a.getTime()) / MILLI_DAY_FACTOR;
 }
 
 function subDays(date: Date, subtrahend: number): Date {
@@ -57,14 +68,8 @@ function dateToString(date: Date) {
 }
 
 function stringToDate(dateString: string) {
-  let [year, month, day] = dateString.split("-").map(parseInt);
-  return new Date(year, month - 1, day);
+  let [year, month, day] = dateString.split("-").map(e => parseInt(e));
+  return new Date(year, month - 1, day + 1);
 }
 
-export {
-  days as daysBetween,
-  stringToDate,
-  dateToString,
-  subDays,
-  getDataPoints
-};
+export { days, dayDiff, stringToDate, dateToString, subDays, getDataPoints };

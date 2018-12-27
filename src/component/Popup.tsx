@@ -1,13 +1,13 @@
-import React from "react";
-import StorageBackedComponent from "./StorageBackedComponent";
+import React, { Component, Props } from "react";
 import AlphaVantage from "alphavantage-ts";
 import { Line } from "react-chartjs-2";
-import { subDays, getDataPoints, dateToString, stringToDate } from "../helpers";
+import { subDays, getDataPoints, dateToString, days } from "../helpers";
 
 type PopupState = {
   graphStart: string;
   graphEnd: string;
-  dataSeriesList: { [symbol: string]: { x: Date; y: number }[] };
+  labels: string[];
+  dataSetsList: { label: string; data: number[] }[];
 };
 
 type PopupProps = {
@@ -16,49 +16,66 @@ type PopupProps = {
   apiConnection: AlphaVantage;
 };
 
-class Popup extends StorageBackedComponent<PopupState, PopupProps> {
+class Popup extends Component<PopupProps, PopupState> {
   constructor(props: PopupProps) {
-    super(props, () => {
-      return {
-        graphStart: dateToString(subDays(new Date(), 7)),
-        graphEnd: dateToString(new Date()),
-        dataSeriesList: {}
-      };
-    });
+    super(props);
+
+    let dateA = dateToString(subDays(new Date(), 7));
+    let dateB = dateToString(new Date());
+    let labels = days(dateA, dateB);
+
+    this.state = {
+      graphStart: dateA,
+      graphEnd: dateB,
+      labels: labels,
+      dataSetsList: []
+    };
   }
 
-  componentDidMount = () => {
-    if (this.state.dataSeriesList === undefined) {
-      this.updateDataSeries();
+  componentWillMount = () => {
+    this.updateData();
+  };
+
+  componentDidUpdate = (prevProps: PopupProps) => {
+    if (prevProps.shareList != this.props.shareList) {
+      this.setState({
+        graphStart: this.state.graphStart,
+        graphEnd: this.state.graphEnd,
+        labels: this.state.labels,
+        dataSetsList: []
+      });
+      this.updateData();
     }
   };
 
-  updateDataSeries = () => {
+  updateData = () => {
     this.props.shareList.forEach(share => {
-      getDataPoints(
-        share,
-        stringToDate(this.state.graphStart),
-        stringToDate(this.state.graphEnd),
-        this.props.apiConnection
-      ).then(data => {
+      getDataPoints(share, this.state.labels).then(data => {
         this.setState({
           graphStart: this.state.graphStart,
           graphEnd: this.state.graphEnd,
-          dataSeriesList: { ...this.state.dataSeriesList, [share]: data }
+          labels: this.state.labels,
+          dataSetsList: [
+            ...this.state.dataSetsList,
+            { label: share, data: data }
+          ]
         });
       });
     });
   };
 
-  getId = () => {
-    return `SPMS-Popup-${btoa(this.props.shareList.toString())}`;
-  };
-
   render() {
-    let graphPopup = (
-      <div>
+    return (
+      <div className="graph">
         <button onClick={this.props.onCloseButtonClick}>X</button>
-        <Line data={this.state.dataSeriesList} />
+        <Line
+          data={{
+            labels: this.state.labels,
+            datasets: this.state.dataSetsList
+          }}
+          options={{ spanGaps: true }}
+          redraw={true}
+        />
         <input
           type="date"
           value={this.state.graphStart}
@@ -66,9 +83,10 @@ class Popup extends StorageBackedComponent<PopupState, PopupProps> {
             this.setState({
               graphStart: evt.target.value,
               graphEnd: this.state.graphEnd,
-              dataSeriesList: this.state.dataSeriesList
+              labels: days(evt.target.value, this.state.graphStart),
+              dataSetsList: this.state.dataSetsList
             });
-            this.updateDataSeries();
+            this.updateData();
           }}
         />
         <input
@@ -78,15 +96,14 @@ class Popup extends StorageBackedComponent<PopupState, PopupProps> {
             this.setState({
               graphStart: this.state.graphStart,
               graphEnd: evt.target.value,
-              dataSeriesList: this.state.dataSeriesList
+              labels: days(this.state.graphStart, evt.target.value),
+              dataSetsList: this.state.dataSetsList
             });
-            this.updateDataSeries();
+            this.updateData();
           }}
         />
       </div>
     );
-
-    return <div>{graphPopup}</div>;
   }
 }
 

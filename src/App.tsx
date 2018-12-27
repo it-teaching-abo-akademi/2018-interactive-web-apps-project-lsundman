@@ -3,12 +3,9 @@ import "./App.css";
 import { Portfolio } from "./component/Portfolio";
 import AlphaVantage from "alphavantage-ts";
 import StorageBackedComponent from "./component/StorageBackedComponent";
-import { Line } from "react-chartjs-2";
+import Popup from "./component/Popup";
 
-let API_CONN: AlphaVantage;
-
-if (process.env.REACT_APP_API_KEY !== undefined)
-  API_CONN = new AlphaVantage(process.env.REACT_APP_API_KEY);
+let API_CONN = new AlphaVantage("9LUUJN34EO841037");
 
 export function getApiConnection(): AlphaVantage {
   return API_CONN;
@@ -31,7 +28,8 @@ class App extends StorageBackedComponent<SpmsState, {}> {
     });
   }
 
-  addPortfolio = () => {
+  addPortfolio = (evt: any) => {
+    evt.preventDefault();
     if (this.state.portfolioList.length < 10) {
       if (this.state.addFieldValue != "") {
         if (
@@ -90,29 +88,26 @@ class App extends StorageBackedComponent<SpmsState, {}> {
 
     let popup;
 
-    if (this.state.graphList.length > 0) {
-      popup = (
-        <div className="graph">
-          <Popup
-            shareList={this.state.graphList}
-            apiConnection={getApiConnection()}
-            onCloseButtonClick={() => {
-              this.setState({
-                portfolioList: this.state.portfolioList,
-                addFieldValue: this.state.addFieldValue,
-                graphList: []
-              });
-            }}
-          />
-        </div>
-      );
-    }
+    popup =
+      this.state.graphList.length > 0 ? (
+        <Popup
+          shareList={this.state.graphList}
+          apiConnection={getApiConnection()}
+          onCloseButtonClick={() => {
+            this.setState({
+              portfolioList: this.state.portfolioList,
+              addFieldValue: this.state.addFieldValue,
+              graphList: []
+            });
+          }}
+        />
+      ) : null;
 
     return (
       <div>
-        <div className="header">
-          <button onClick={this.addPortfolio}> Add portfolio</button>
+        <form onSubmit={this.addPortfolio}>
           <input
+            className="add-portfolio-field"
             onChange={evt => {
               this.setState({
                 portfolioList: this.state.portfolioList,
@@ -122,10 +117,11 @@ class App extends StorageBackedComponent<SpmsState, {}> {
             }}
             type="text"
             value={this.state.addFieldValue}
+            placeholder="Enter portfolio name here and press enter"
           />
-        </div>
-        <ul>{portfolios}</ul>
+        </form>
         {popup}
+        <ul>{portfolios}</ul>
       </div>
     );
   }
