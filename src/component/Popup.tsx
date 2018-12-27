@@ -67,7 +67,12 @@ class Popup extends Component<PopupProps, PopupState> {
   render() {
     return (
       <div className="graph">
-        <button onClick={this.props.onCloseButtonClick}>X</button>
+        <button
+          className="close-button"
+          onClick={this.props.onCloseButtonClick}
+        >
+          X
+        </button>
         <Line
           data={{
             labels: this.state.labels,

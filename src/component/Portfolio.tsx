@@ -106,13 +106,6 @@ export class Portfolio extends StorageBackedComponent<
       body = (
         <div>
           {table}
-          <button
-            onClick={() => {
-              this.props.onRemove();
-            }}
-          >
-            Remove portfolio
-          </button>
           <div className="button-row">
             <button
               onClick={() => {
@@ -163,6 +156,14 @@ export class Portfolio extends StorageBackedComponent<
     }
     return (
       <li className="spms-portfolio">
+        <button
+          className="close-button"
+          onClick={() => {
+            this.props.onRemove();
+          }}
+        >
+          X
+        </button>
         <div>
           <h2>{this.props.name}</h2>
           {body}
