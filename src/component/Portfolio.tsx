@@ -8,6 +8,7 @@ type PortfolioState = {
     shareSymbol: string;
     shareAmount: number;
     selected: boolean;
+    price: number;
   }[];
   viewMain: boolean;
 };
@@ -35,7 +36,12 @@ export class Portfolio extends StorageBackedComponent<
       this.setState({
         shareList: [
           ...this.state.shareList,
-          { shareSymbol: symbol, shareAmount: amount, selected: false }
+          {
+            shareSymbol: symbol,
+            shareAmount: amount,
+            selected: false,
+            price: -1
+          }
         ],
         viewMain: true
       });
@@ -60,7 +66,8 @@ export class Portfolio extends StorageBackedComponent<
           ? {
               shareSymbol: share.shareSymbol,
               shareAmount: share.shareAmount,
-              selected: selected
+              selected: selected,
+              price: share.price
             }
           : share
       ),
@@ -79,6 +86,21 @@ export class Portfolio extends StorageBackedComponent<
         symbol={item.shareSymbol}
         amount={item.shareAmount}
         onSelect={selected => this.setSelected(item.shareSymbol, selected)}
+        onPriceChange={newPrice => {
+          this.setState({
+            shareList: this.state.shareList.map(share =>
+              share.shareSymbol === item.shareSymbol
+                ? {
+                    shareSymbol: share.shareSymbol,
+                    shareAmount: share.shareAmount,
+                    selected: share.selected,
+                    price: newPrice
+                  }
+                : share
+            ),
+            viewMain: this.state.viewMain
+          });
+        }}
         selected={item.selected}
         currency={this.props.currency}
         forexRate={this.props.forexRate}
@@ -100,6 +122,24 @@ export class Portfolio extends StorageBackedComponent<
             </tr>
           </thead>
           <tbody>{tickers}</tbody>
+          <tfoot>
+            <tr>
+              <td />
+              <td />
+              <td />
+              <td />
+              <td>
+                {this.props.currency === "USD" ? "$ " : "€ "}
+                {Math.round(
+                  this.state.shareList
+                    .map(share => share.price)
+                    .reduce((a, b) => a + b) *
+                    (this.props.currency === "USD" ? 1 : this.props.forexRate) *
+                    100
+                ) / 100}
+              </td>
+            </tr>
+          </tfoot>
         </table>
       );
     }

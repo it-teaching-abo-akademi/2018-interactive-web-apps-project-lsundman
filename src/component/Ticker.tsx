@@ -7,6 +7,7 @@ export class Ticker extends React.Component<
     symbol: string;
     amount: number;
     onSelect: (selected: boolean) => void;
+    onPriceChange: (newPrice: number) => void;
     selected: boolean;
     currency: "USD" | "EUR";
     forexRate: number;
@@ -31,6 +32,9 @@ export class Ticker extends React.Component<
         price: data,
         invalidSymbol: data === undefined
       });
+      if (data != undefined) {
+        this.props.onPriceChange(data * this.props.amount);
+      }
     });
   };
 

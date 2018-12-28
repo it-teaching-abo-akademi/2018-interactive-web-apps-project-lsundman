@@ -3,14 +3,14 @@ import { getApiConnection } from "./App";
 // 24h is this many milliseconds
 const MILLI_DAY_FACTOR = 86400000;
 
-export async function getQuote(symbol: string): Promise<number> {
+export async function getQuote(symbol: string): Promise<any> {
   return getApiConnection()
     .stocks.quote(symbol, { datatype: "json" })
     .then(data => {
       if (data["Global Quote"] === {}) {
         return undefined;
       } else {
-        return data["Global Quote"]["05. price"];
+        return parseInt(data["Global Quote"]["05. price"]);
       }
     });
 }
