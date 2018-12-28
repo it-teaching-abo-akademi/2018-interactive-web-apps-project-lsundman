@@ -16,6 +16,8 @@ type PortfolioProps = {
   name: string;
   onRemove: () => void;
   onGraphShow: (data: string[]) => void;
+  forexRate: number;
+  currency: "USD" | "EUR";
 };
 
 export class Portfolio extends StorageBackedComponent<
@@ -24,7 +26,7 @@ export class Portfolio extends StorageBackedComponent<
 > {
   constructor(props: PortfolioProps) {
     super(props, () => {
-      return { shareList: [], viewMain: true };
+      return { shareList: [], viewMain: true, currency: "USD" };
     });
   }
 
@@ -78,6 +80,8 @@ export class Portfolio extends StorageBackedComponent<
         amount={item.shareAmount}
         onSelect={selected => this.setSelected(item.shareSymbol, selected)}
         selected={item.selected}
+        currency={this.props.currency}
+        forexRate={this.props.forexRate}
       />
     ));
 
@@ -149,7 +153,10 @@ export class Portfolio extends StorageBackedComponent<
         <AddForm
           addTicker={this.addStock}
           cancel={() => {
-            this.setState({ shareList: this.state.shareList, viewMain: true });
+            this.setState({
+              shareList: this.state.shareList,
+              viewMain: true
+            });
           }}
         />
       );

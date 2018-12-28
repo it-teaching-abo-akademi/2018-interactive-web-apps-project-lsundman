@@ -44,13 +44,6 @@ td {
   height: 2.5em;
 }
 
-.add-portfolio-field {
-  width: 50vw;
-  margin: auto;
-  display: block;
-  margin-top: 2em;
-}
-
 .invalid-symbol {
   background: red;
 }
@@ -86,4 +79,17 @@ li {
   border-radius: 0px;
   position: relative;
   float: left;
+}
+
+.header {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-portfolio-field {
+  width: 50vw;
+  margin: auto;
+  margin-top: 2em;
 }

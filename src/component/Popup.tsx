@@ -14,6 +14,8 @@ type PopupProps = {
   shareList: string[];
   onCloseButtonClick: (() => void);
   apiConnection: AlphaVantage;
+  currency: "USD" | "EUR";
+  forexRate: number;
 };
 
 class Popup extends Component<PopupProps, PopupState> {
@@ -76,7 +78,18 @@ class Popup extends Component<PopupProps, PopupState> {
         <Line
           data={{
             labels: this.state.labels,
-            datasets: this.state.dataSetsList
+            datasets:
+              this.props.currency === "USD"
+                ? this.state.dataSetsList
+                : this.state.dataSetsList.map(list => {
+                    return {
+                      label: list.label,
+                      data: list.data.map(
+                        value =>
+                          Math.round(value * this.props.forexRate * 100) / 100
+                      )
+                    };
+                  })
           }}
           options={{ spanGaps: true }}
           redraw={true}

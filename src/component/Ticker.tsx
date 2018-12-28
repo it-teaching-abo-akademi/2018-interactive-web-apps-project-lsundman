@@ -8,6 +8,8 @@ export class Ticker extends React.Component<
     amount: number;
     onSelect: (selected: boolean) => void;
     selected: boolean;
+    currency: "USD" | "EUR";
+    forexRate: number;
   },
   { price: number | undefined; invalidSymbol: boolean }
 > {
@@ -40,9 +42,16 @@ export class Ticker extends React.Component<
       quoteLabel = "...";
       quoteLabelTotal = "...";
     } else {
-      quoteLabel = this.state.price;
+      quoteLabel =
+        this.props.currency === "USD"
+          ? `$ ${this.state.price}`
+          : `€ ${Math.round(this.state.price * this.props.forexRate * 100) /
+              100}`;
+      let total = Math.round(this.state.price * this.props.amount * 100) / 100;
       quoteLabelTotal =
-        Math.round(this.state.price * this.props.amount * 100) / 100;
+        this.props.currency === "USD"
+          ? `$ ${total}`
+          : `€ ${Math.round(total * this.props.forexRate * 100) / 100}`;
     }
 
     return (
@@ -55,9 +64,9 @@ export class Ticker extends React.Component<
           />
         </td>
         <td> {this.props.symbol} </td>
-        <td>$ {quoteLabel}</td>
+        <td>{quoteLabel}</td>
         <td> {this.props.amount} </td>
-        <td>$ {quoteLabelTotal}</td>
+        <td>{quoteLabelTotal}</td>
       </tr>
     );
   }
